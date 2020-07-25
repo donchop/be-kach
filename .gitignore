@@ -1,0 +1,3 @@
+# Exclude npm files
+node_modules
+client/node_modules

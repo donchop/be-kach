@@ -1,0 +1,5 @@
+{
+  "port":5000,
+  "jwtSecret":"appforkach",
+  "mongoUri":"mongodb+srv://admin:admin123987@cluster0-taawr.mongodb.net/kach?retryWrites=true&w=majority"
+}
