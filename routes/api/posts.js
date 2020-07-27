@@ -72,10 +72,12 @@ router.get("/:id", async (req, res) => {
 
     return res.json(post);
   } catch (error) {
-    console.log(error.message);
+    if (error.kind === "ObjectId") {
+      return res.status(404).json({ msg: "Страница не найдена" });
+    }
     return res.json(500).send("Server error");
   }
-});
+}); 
 
 // @route  DELETE api/posts/:id
 // @desc   DELETE POST
