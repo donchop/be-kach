@@ -8,7 +8,7 @@ const User = require("../../models/User");
 const Profile = require("../../models/Profile");
 
 // @route  POST api/posts
-// @desc   Create posts
+// @desc   Create post
 // @access Private
 router.post(
   "/",
@@ -37,6 +37,38 @@ router.post(
       });
 
       const post = await newPost.save();
+
+      return res.json(post);
+    } catch (error) {
+      console.log(error.message);
+      return res.json(500).send("Server error");
+    }
+  }
+);
+// @route  PUT api/posts/:id
+// @desc   Edit post
+// @access Private
+router.put(
+  "/:id",
+  [
+    auth,
+    [
+      body("title", "Введите название программы").notEmpty(),
+      body("imgUrl", "Введите ссылку на картинку").notEmpty(),
+      body("text", "Введите описание программы").notEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      const post = await Post.findByIdAndUpdate(
+        { _id: req.params.id },
+        { $set: req.body },
+        { new: true }
+      );
 
       return res.json(post);
     } catch (error) {
@@ -77,7 +109,7 @@ router.get("/:id", async (req, res) => {
     }
     return res.json(500).send("Server error");
   }
-}); 
+});
 
 // @route  DELETE api/posts/:id
 // @desc   DELETE POST
@@ -154,7 +186,7 @@ router.delete("/comment/:id/:comment_id", auth, async (req, res) => {
       return res.status(404).json({ msg: "Комментария не существует" });
     }
     // Check user
-  
+
     if (comment.user.toString() !== req.user.id) {
       return res.status(404).json({ msg: "Пользователь не авторизован" });
     }
