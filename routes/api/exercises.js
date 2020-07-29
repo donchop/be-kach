@@ -7,7 +7,7 @@ const Exercise = require("../../models/Exercise");
 
 // @route  POST api/exercises
 // @desc   Create exercise
-// @access Private
+// @access PRIVATE
 router.post(
   "/",
   [
@@ -52,42 +52,44 @@ router.post(
   }
 );
 
-// // @route  PUT api/exercises/:id
-// // @desc   Edit exercise
-// // @access Private
-// router.put(
-//   "/:id",
-//   [
-//     auth,
-//     [
-//       body(
-//         "muscleGroup",
-//         "Выберите к какой группе мышц относиться упражнение"
-//       ).notEmpty(),
-//       body("name", "Введите название упражнения").notEmpty(),
-//       body("video", "Введите ссылку на видео упражнения").notEmpty(),
-//       body("text", "Введите описание упражнения").notEmpty(),
-//     ],
-//   ],
-//   async (req, res) => {
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//       return res.status(400).json({ errors: errors.array() });
-//     }
-//     try {
-//       const post = await Post.findByIdAndUpdate(
-//         { _id: req.params.id },
-//         { $set: req.body },
-//         { new: true }
-//       );
+// @route  PUT api/exercises/:id
+// @desc   Edit exercise
+// @access PRIVATE
+router.put(
+  "/:id",
+  [
+    auth,
+    [
+      body(
+        "muscleGroup",
+        "Выберите к какой группе мышц относиться упражнение"
+      ).notEmpty(),
+      body("name", "Введите название упражнения").notEmpty(),
+      body("video", "Введите ссылку на видео упражнения").notEmpty(),
+      body("text", "Введите описание упражнения").notEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      const exercise = await Exercise.findByIdAndUpdate(
+        { _id: req.params.id },
+        { $set: req.body },
+        { new: true }
+      );
 
-//       return res.json(post);
-//     } catch (error) {
-//       console.log(error.message);
-//       return res.json(500).send("Server error");
-//     }
-//   }
-// );
+      return res.json(exercise);
+    } catch (error) {
+      if (error.kind === "ObjectId") {
+        return res.status(404).json({ msg: "Страница не найдена" });
+      }
+      return res.json(500).send("Server error");
+    }
+  }
+);
 
 // @route  POST api/exercises/muscleGroup
 // @desc   Get exercises by muscleGroup
@@ -109,7 +111,7 @@ router.get("/:muscleGroup", async (req, res) => {
   }
 });
 
-// @route  POST api/exercises/muscleGroup
+// @route  POST api/exercises/musclegroup/:id
 // @desc   Get exercise by id
 // @access PUBLIC
 router.get("/musclegroup/:id", async (req, res) => {
@@ -119,6 +121,26 @@ router.get("/musclegroup/:id", async (req, res) => {
       return res.status(404).json({ msg: "Страница не найдена" });
     }
     return res.json(exercises);
+  } catch (error) {
+    if (error.kind === "ObjectId") {
+      return res.status(404).json({ msg: "Страница не найдена" });
+    }
+    return res.json(500).send("Server error");
+  }
+});
+
+// @route  POST api/exercises/:id
+// @desc   Delete exercise
+// @access PRIVATE
+router.delete("/:id",auth, async (req, res) => {
+  try {
+    const exercises = await Exercise.findById(req.params.id);
+    if (!exercises) {
+      return res.status(404).json({ msg: "Страница не найдена" });
+    }
+
+    await exercises.remove();
+    return res.json({msg:"Упражнение удалено"});
   } catch (error) {
     if (error.kind === "ObjectId") {
       return res.status(404).json({ msg: "Страница не найдена" });
