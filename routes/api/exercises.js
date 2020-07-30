@@ -29,14 +29,16 @@ router.post(
     }
     try {
       if (
-        req.body.muscleGroup !== "chest" &&
-        req.body.muscleGroup !== "shoulders" &&
-        req.body.muscleGroup !== "back" &&
-        req.body.muscleGroup !== "biceps" &&
-        req.body.muscleGroup !== "triceps" &&
-        req.body.muscleGroup !== "forearm" &&
-        req.body.muscleGroup !== "legs" &&
-        req.body.muscleGroup !== "press"
+        ![
+          "chest",
+          "shoulders",
+          "back",
+          "biceps",
+          "triceps",
+          "forearm",
+          "legs",
+          "press",
+        ].includes(req.body.muscleGroup)
       ) {
         return res.status(400).json({
           msg: "Такой группы мышц не существует, выберите из существующих",
@@ -75,6 +77,22 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
     try {
+      if (
+        ![
+          "chest",
+          "shoulders",
+          "back",
+          "biceps",
+          "triceps",
+          "forearm",
+          "legs",
+          "press",
+        ].includes(req.body.muscleGroup)
+      ) {
+        return res.status(400).json({
+          msg: "Такой группы мышц не существует, выберите из существующих",
+        });
+      }
       const exercise = await Exercise.findByIdAndUpdate(
         { _id: req.params.id },
         { $set: req.body },
@@ -102,8 +120,9 @@ router.get("/:muscleGroup", async (req, res) => {
     if (!exercises || exercises.length === 0) {
       return res
         .status(400)
-        .json({ msg: "Для данной группы мышц упражнений нет" });
+        .json({ msg: "Для данной группы мышц - упражнений нет" });
     }
+    
     return res.json(exercises);
   } catch (error) {
     console.log(error.message);
@@ -132,7 +151,7 @@ router.get("/musclegroup/:id", async (req, res) => {
 // @route  POST api/exercises/:id
 // @desc   Delete exercise
 // @access PRIVATE
-router.delete("/:id",auth, async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     const exercises = await Exercise.findById(req.params.id);
     if (!exercises) {
@@ -140,7 +159,7 @@ router.delete("/:id",auth, async (req, res) => {
     }
 
     await exercises.remove();
-    return res.json({msg:"Упражнение удалено"});
+    return res.json({ msg: "Упражнение удалено" });
   } catch (error) {
     if (error.kind === "ObjectId") {
       return res.status(404).json({ msg: "Страница не найдена" });
