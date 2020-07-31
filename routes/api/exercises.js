@@ -28,6 +28,9 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
     try {
+      if (req.user.fullRigth) {
+       return res.status(401).json({ msg: "Нет авторизации" });
+      }
       if (
         ![
           "chest",
@@ -122,7 +125,7 @@ router.get("/:muscleGroup", async (req, res) => {
         .status(400)
         .json({ msg: "Для данной группы мышц - упражнений нет" });
     }
-    
+
     return res.json(exercises);
   } catch (error) {
     console.log(error.message);
