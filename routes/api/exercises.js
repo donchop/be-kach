@@ -35,11 +35,19 @@ router.post(
         ![
           "chest",
           "shoulders",
-          "back",
+          "trapezius",
+          "latissimus",
+          "lowerback",
+          "frontdelt",
+          "middledelt",
+          "reardelt",
           "biceps",
           "triceps",
           "forearm",
-          "legs",
+          "buttocks",
+          "quadriceps",
+          "bicepsfemoris",
+          "calf",
           "press",
         ].includes(req.body.muscleGroup)
       ) {
@@ -84,11 +92,19 @@ router.put(
         ![
           "chest",
           "shoulders",
-          "back",
+          "trapezius",
+          "latissimus",
+          "lowerback",
+          "frontdelt",
+          "middledelt",
+          "reardelt",
           "biceps",
           "triceps",
           "forearm",
-          "legs",
+          "buttocks",
+          "quadriceps",
+          "bicepsfemoris",
+          "calf",
           "press",
         ].includes(req.body.muscleGroup)
       ) {
